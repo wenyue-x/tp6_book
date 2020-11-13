@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员-图书管理系统</title>
+    <link href="{__STATIC_PATH}layui/css/layui.css" rel="stylesheet"/>
+
+</head>
+<div class="layui-layout layui-layout-admin">
+
+    <div class="layui-header">
+        <div class=" layui-nav " style="font-size: x-large; color: #009688;line-height: 60px;"> 图 书 管 理 系 统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="{__STATIC_PATH}images/user_image.jpg" class="layui-nav-img">
+                    <span th:text="${session.admin.getAdminName()}"></span>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="/adminLogOut">退出登录</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree">
+
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">书籍管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/admin/add">&emsp;&emsp;录入新书</a></dd>
+                        <dd class="layui-this"><a href="/admin/index/addCategory">&emsp;&emsp;新建类别</a></dd>
+                        <dd><a href="/admin/books">&emsp;&emsp;查询书籍</a></dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">用户管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/admin/user">&emsp;&emsp;查询用户</a></dd>
+                        <dd><a href="/admin/user/user">&emsp;&emsp;新增用户</a></dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">借阅信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/admin/user/borrow">&emsp;&emsp;所有记录</a></dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item"><a href="/admin/admin">个人信息</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body layui-container">
+
+        <div class="layui-row">
+
+            <div class="layui-col-md4"><!--左半部分-->
+
+                <hr class="layui-bg-blue">
+                <h2 style="text-align:center">新建类别</h2>
+                <hr class="layui-bg-blue">
+
+                <form class="layui-form" id="addBookCategoryForm">
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">类别</label>
+                        <input class="layui-input-inline layui-input" id="categoryName" autocomplete="off"
+                               placeholder="请输入类别名称" type="text" name="categoryName" >
+                    </div>
+
+                    <input name="pageNum" value="1" style="display: none">
+
+                    <div class="layui-input-inline" style="margin-left: 100px">
+                        <button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="demo1">立即提交</button>
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="layui-col-md6 layui-col-md-offset2 "><!--右半部分-->
+                <hr class="layui-bg-blue">
+                <h2 style="text-align:center">已 有 类 别</h2>
+                <hr class="layui-bg-blue">
+
+                <table class="layui-table" lay-size="sm">
+                    <thead>
+                    <tr>
+                        <th>类别编号</th>
+                        <th>类别名称</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="categorys['data']" id="vo"}
+                    <tr>
+                        <td>
+                            {$vo.category_id}
+                        </td>
+                        <td>
+                            {$vo.category_name}
+                        </td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete delete" data-ptype="1"
+                               lay-event="delete" data-id="{$vo.category_id}">删除</a>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+
+
+
+                </table>
+<!--                <div>{$categorys.render|raw}</div>-->
+                <div id="pages"></div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+    <div th:include="common/footer :: footer"></div>
+
+</div>
+
+<script src="{__STATIC_PATH}scripts/jquery.min.js"></script>
+<script src="{__STATIC_PATH}layui/layui.js"></script>
+<script src="{__STATIC_PATH}layui/layui.all.js"></script>
+<!--<script src="{__STATIC_PATH}scripts/admin/addBookCategory.js"></script>-->
+<script>
+    layui.use(['form','element','layer'], function () {
+        var form = layui.form
+        var laypage = layui.laypage;
+  //     let element = layui.element();
+        let layer = layui.layer;
+        laypage.render({ //分页
+            elem: 'pages'
+            , count: {$categorys.total}
+            , theme: '#FFB800'
+            , limit: {$categorys.per_page}
+            , curr : {$categorys.current_page}
+            , jump:function (obj,first) {
+                if (!first) {
+                    location.href = "?page="+obj.curr
+                }
+            }
+        });
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            console.log(data.field, '最终的提交信息')
+            data = data.field;
+             let url = '';
+            // // layObj.post(url,data,function (res) {
+            // //
+            // // });
+            $.ajax({
+                type: 'POST',
+                data: data,
+                url: '/admin/index/add',
+                success: (res) => {
+                    if (res.status == 1){
+                        layer.msg('新增成功',function (){
+                            window.location='{:url("admin/index/addCategory")}';
+                        });
+                    } else{
+                        layer.msg(res.message);
+                        return false;
+
+                    }
+                    setTimeout('window.location.reload()',1000);
+                }
+            })
+
+            return false;
+        });
+
+
+    // $(document).ready(function () {
+    //
+    //     //检查能否再点击上一页，下一页
+    //     let lab1 = $("#lab1").html().trim();//获取当前页码
+    //     let lab2 = $("#lab2").html().trim();//获取总页码
+    //
+    //     $("#prePage").click(function () {
+    //         if (lab1 == 1) {
+    //             layer.msg("已经是最后一页了!", {icon: 7});
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+
+        // $("#nextPage").click(function () {
+        //     if (lab1 == lab2) {
+        //         layer.msg("已经是最后一页了!", {icon: 7});
+        //         return false;
+        //     }
+        //     return true;
+        // });
+
+        //点击删除按钮后删除一行
+        $(".btn_deleteCategory").click(function () {
+
+            // 获取要删除选项对应的 id;
+
+            let that = $(this);
+
+            layer.confirm('确认删除?', {
+                btn: ['确认', '取消'] //按钮
+            }, function () {
+                let bookCategoryId = that.val();
+
+                deleteBookCategoryById(bookCategoryId);
+
+                that.parent().parent().remove();
+                layer.msg("删除成功", {icon: 1, time: 1000});
+
+                setTimeout(function () {
+
+                    // 关闭所有 layer选项框
+                    parent.layer.closeAll();
+                }, 1000)
+
+            });
+
+        });
+    });
+
+
+
+    // //ajax添加种类
+    // function addBookCategory() {
+    //     $.ajax({
+    //         async: false,
+    //         type: "post",
+    //         url: "admin/index/add",
+    //         dataType: "json",
+    //         data: $("#addBookCategoryForm").serialize(),
+    //         success: function (data) {
+    //
+    //             if (data.toString() == "true") {
+    //                 layer.msg("添加成功!", {icon: 1, time: 1500});
+    //
+    //                 // 1500ms后 重新加载页面 , 将更改后的内容重新加载到页面
+    //                 setTimeout(function () {
+    //                     location.reload();
+    //                 }, 1500);
+    //             } else {
+    //                 layer.msg("添加失败!", {icon: 2, time: 1500});
+    //             }
+    //         },
+    //         error: function (data) {
+    //             layer.msg("添加失败!", {icon: 2, time: 1500});
+    //         }
+    //     });
+    // };
+
+    //ajax删除种类
+    function deleteBookCategoryById(bookCategoryId) {
+        $.ajax({
+            async: false,
+            type: "post",
+            url: "/deleteCategory",
+            dataType: "json",
+            data: {bookCategoryId: bookCategoryId},
+            success: function (data) {
+
+            },
+            error: function (data) {
+                alert(data.result);
+            }
+        });
+    }
+
+
+</script>
+
+</body>
+</html>
+

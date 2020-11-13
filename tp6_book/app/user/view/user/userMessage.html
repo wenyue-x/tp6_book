@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>普通用户-图书管理系统</title>
+    <link href="{__STATIC_PATH}layui/css/layui.css" rel="stylesheet"/>
+
+</head>
+<body class="layui-layout-body">
+
+<div class="layui-layout layui-layout-admin">
+
+    <div class="layui-header">
+        <div class=" layui-nav " style="font-size: x-large; color: #009688;line-height: 60px;"> 图 书 管 理 系 统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="{__STATIC_PATH}images/user_image.jpg" class="layui-nav-img">
+                    <span th:text="${session.admin.getAdminName()}"></span>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="/adminLogOut">退出登录</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree">
+
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">借阅管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/user/borrow/record">&emsp;&emsp;借书记录</a></dd>
+                        <dd><a href="/user/borrow/index">&emsp;&emsp;借阅书籍</a></dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">书籍管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/user/restore">&emsp;&emsp;归还书籍</a></dd>
+                        <dd><a href="/user/book">&emsp;&emsp;查询书籍</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed"><a class="" href="/user/user">个人信息</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body layui-container">
+
+        <hr class="layui-bg-blue">
+        <h3 style="font-size: xx-large; text-align: center"> 个 人 信 息 </h3>
+        <hr class="layui-bg-blue">
+
+        <div class="layui-row">
+            <div class="layui-col-md8 layui-col-lg-offset2">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>用户id</th>
+                        <th>用户姓名</th>
+                        <th>用户邮箱</th>
+                        <th>用户密码</th>
+                    </tr>
+                    </thead>
+
+                    <tr>
+                        <td>{$data.user_id}</td>
+                        <td>{$data.user_name}</td>
+                        <td>{$data.user_email}</td>
+                        <td>{$data.user_pwd}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <button id="modify-user" class="layui-btn" style="display: block; margin: 10px auto;">修改信息</button>
+        </div>
+
+        <div id="window" title="修改信息" style="margin: 5%; display: none">
+            <form id="updateUserForm" class="layui-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">名字</label>
+
+                    <div class="layui-input-block">
+                        <input type="text" name="userName" readonly="readonly" value="{$data.user_name}" id="name"
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">邮箱</label>
+
+                    <div class="layui-input-block">
+                        <input type="text" name="userEmail" value="{$data.user_email}" id="email"
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">密码</label>
+
+                    <div class="layui-input-block">
+                        <input type="text" name="userPwd" id="password" class="layui-input"
+                               value="{$data.user_pwd}">
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+
+<script src="{__STATIC_PATH}scripts/jquery.min.js"></script>
+<script src="{__STATIC_PATH}layui/layui.js"></script>
+<script src="{__STATIC_PATH}scripts/user/userMessage.js"></script>
+
+</body>
+</html>
